@@ -30,4 +30,5 @@ class StatisticsHandler
     virtual void communicate_number_infected(int time, int infected) = 0;
 };
 
+
 }

@@ -27,7 +27,9 @@ enum CanvasColor
     ORANGE,
     BLACK,
     SHADE_BLUE,
-    SHADE_ORANGE
+    SHADE_ORANGE,
+    MAGENTA,
+    YELLOW
 };
 
 /**
@@ -36,7 +38,7 @@ enum CanvasColor
  */
 class Canvas
 {
-    public:
+      public:
     virtual ~Canvas(){};
     virtual void clear() = 0;
     virtual void draw_pixel(double x, double y, CanvasColor color) = 0;

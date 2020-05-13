@@ -1,8 +1,8 @@
 MKFILE_PATH := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
 
-PATH_TO_EMCC=path/to/emcc
-HEADER_FILES = canvas.h ChartJS_handler.h html_canvas.h simulation.h statistics_handler.h subject.h
-SOURCE_FILES = ChartJS_handler.cpp html_canvas.cpp main.cpp simulation.cpp subject.cpp
+PATH_TO_EMCC=/home/talal/emsdk/upstream/emscripten/emcc
+HEADER_FILES = canvas.h ChartJS_handler.h html_canvas.h simulation.h statistics_handler.h subject.h MovementStrategy/MovementStrategyInterface.h MovementStrategy/LockdownMovementStrategy.h MovementStrategy/RegularMovementStrategy.h
+SOURCE_FILES = ChartJS_handler.cpp html_canvas.cpp main.cpp simulation.cpp subject.cpp MovementStrategy/LockdownMovementStrategy.cpp MovementStrategy/RegularMovementStrategy.cpp
 
 OUTPUT_PATH=$(MKFILE_PATH)/build/
 OUTPUT_FILE_NAME=index.html

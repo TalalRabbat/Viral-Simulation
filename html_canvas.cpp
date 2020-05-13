@@ -38,7 +38,7 @@ std::string generate_unique_name()
 
 std::string canvas_color_to_string(CanvasColor c)
 {
-    switch (c)
+   switch (c)
     {
     case RED:
         return "red";
@@ -48,6 +48,11 @@ std::string canvas_color_to_string(CanvasColor c)
         return "blue";
     case BLACK:
         return "black";
+    case MAGENTA:
+        return "magenta";
+    case YELLOW:
+        return "yellow";
+
     
     default:
         return "ERROR";

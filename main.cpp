@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "MovementStrategy/MovementStrategyInterface.h"
+#include "MovementStrategy/LockdownMovementStrategy.h"
+#include "MovementStrategy/RegularMovementStrategy.h"
+
+
 #include "simulation.h"
 #include <iostream>
 #include <random>
@@ -28,6 +33,23 @@ const int SIM_HEIGHT = 500;
 const int SUBJECT_RADIUS = 2;
 
 int main() {
+
+
+    // ////////////////////////////////////////////////////////////
+    // B.3. preper immunity periods parameters
+    //
+    std::shared_ptr<const int> infection2immunityDuration;
+    std::shared_ptr<const int> immunityDurationShPtr;
+    std::shared_ptr<const int> tick_speedShPtr;
+    //const int tick_speed = 1000/30;
+    //const int immunityDuration = 4 * tick_speed;
+
+    tick_speedShPtr = std::make_shared<const int>(1000/30);
+    infection2immunityDuration= std::make_shared<const int>(90 * (*(tick_speedShPtr.get())));
+    immunityDurationShPtr = std::make_shared<const int>(210 * (*(tick_speedShPtr.get())));
+    // END: B.3. preper immunity periods parameters
+    // ////////////////////////////////////////////////////////////
+
     corsim::Simulation s(SIM_WIDTH,SIM_HEIGHT,std::make_unique<corsim::HTMLCanvas>(30,150,SIM_WIDTH,SIM_HEIGHT),
         std::make_unique<corsim::ChartJSHandler>());
 
@@ -39,12 +61,50 @@ int main() {
     std::uniform_real_distribution<double> dist_dx(-1.0, 1.0);
     std::uniform_real_distribution<double> dist_dy(-1.0, 1.0);
 
+    /*std::uniform_real_distribution<double> dist_random_select(0.0, 1.0);
+    int RandomSelectionIndex[SUBJECT_COUNT];
     for (int i = 0; i<SUBJECT_COUNT; ++i)
     {
+       RandomSelectionIndex[ i ] = -1;
+    }*/
+
+    int limitLockDown = (int)std::floor(SUBJECT_COUNT * 0.75 ); // 75% are locked
+    for (int i = 0; i<SUBJECT_COUNT; ++i)
+    {
+        // -------------------------------------------------------------------------
+        // linear hash collision conflict resolution
+        /*int trajectionIndex = (int)(dist_random_select(mt) * (double)SUBJECT_COUNT);
+        bool isHit = false;
+        do
+        {
+             if( RandomSelectionIndex[trajectionIndex] != -1 )
+             {
+                isHit = false;
+                if(trajectionIndex < (SUBJECT_COUNT - 2))
+                {
+                   trajectionIndex++;
+                }
+                else
+                {
+                   trajectionIndex  = 0; // wrap arround
+                }
+             }
+             else // hit an enpty cell
+             {
+                RandomSelectionIndex[trajectionIndex] = i;
+                isHit = true;
+             }
+        }
+        while( !isHit );*/
+        
+
+     
+        // -------------------------------------------------------------------------
+
         double x = dist_w(mt); //Randomly generate x position
         double y = dist_h(mt); //Randomly generate y position
         
-        corsim::Subject su(x,y,SUBJECT_RADIUS,false);
+        corsim::Subject su(x,y,SUBJECT_RADIUS,false,infection2immunityDuration ,immunityDurationShPtr,tick_speedShPtr);
 
         su.set_dx(dist_dx(mt));
         su.set_dy(dist_dy(mt));
@@ -52,6 +112,20 @@ int main() {
         if(i == SUBJECT_COUNT-1)
         {
             su.infect();
+            su.StartInfection2immunityPeriodOn(0); // first subject infected on simukation time 0
+        }
+
+        if( i < limitLockDown )
+        {
+           // A. instantiate strategy
+           su._movementStrategy = std::make_shared< MovementStrategyInterface* >(new LockdownMovement());
+           //std::cout << "\n ("<<limitLockDown<<"/"<<SUBJECT_COUNT<<") lockdown["<< i <<"]: " << su.isStandStill()<<"\n";
+        }
+        else
+        {
+           // A. instantiate strategy
+           su._movementStrategy = std::make_shared< MovementStrategyInterface* >(new RegularMovement());
+           //std::cout << "\n ("<<limitLockDown<<"/"<<SUBJECT_COUNT<<") lockdown["<< i <<"]: " << su.isStandStill()<<"\n";
         }
 
         s.add_subject(std::move(su));

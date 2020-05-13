@@ -32,13 +32,16 @@ namespace corsim
  */
 class Simulation
 {
-    public:
+     public:
         Simulation(int width, int height, std::unique_ptr<Canvas> canvas, std::unique_ptr<StatisticsHandler> sh);
         void add_subject(Subject&& s);
         void run(); //This method starts the simulation but locks execution because theading is not supported in WASM
     private:
         void wall_collision(Subject& s);
-        void subject_collision(Subject& s1, Subject& s2);
+        //
+        // B.3. propogate counter tick count to allow time related behaviour on immunity
+        //
+        void subject_collision(Subject& s1, Subject& s2 , const int& _counterIn);
         void static_collision(Subject& s1, Subject& s2, bool emergency);
         void tick();
         void draw_to_canvas();

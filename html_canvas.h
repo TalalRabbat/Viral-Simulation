@@ -28,7 +28,7 @@ namespace corsim
  */
 class HTMLCanvas : public Canvas
 {
-    public:
+   public:
     HTMLCanvas(int x, int y, int width, int height);
     ~HTMLCanvas() override;
     void clear() override;
